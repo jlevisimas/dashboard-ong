@@ -7,10 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-
   :root {
-    --sheet-url: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTVRy5z8yoceHbhr9Pm7vsxUgKgUWVwkPkYd4zUKgQuSjGqMVlLoKs0riYX2MwrhQ/pub?output=csv";
-
     --bg: #F7F5F0;
     --card: #FFFFFF;
     --border: #E8E4DC;
@@ -26,243 +23,110 @@
     --radius: 12px;
     --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
   }
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 0;
-  }
-
-  /* Header */
   .header {
-    background: var(--text);
-    color: #fff;
+    background: var(--text); color: #fff;
     padding: 20px 32px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
   }
   .header-title { font-size: 15px; font-weight: 500; letter-spacing: 0.02em; opacity: 0.9; }
   .header-sub { font-size: 12px; opacity: 0.45; margin-top: 2px; font-family: var(--mono); }
-  .status-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--green); display: inline-block;
-    margin-right: 6px; animation: pulse 2s infinite;
-  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 6px; animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .status-label { font-size: 12px; opacity: 0.6; }
 
-  /* Main layout */
   .main { padding: 24px 32px; max-width: 1100px; margin: 0 auto; }
 
-  /* Config banner */
-  .config-banner {
-    background: #FFF8E6;
-    border: 1.5px solid #F0CC6A;
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    font-size: 14px;
-    color: #7A5C00;
-    display: none;
-  }
-  .config-banner.show { display: block; }
-  .config-banner strong { font-weight: 600; }
-  .config-banner code {
-    background: rgba(0,0,0,0.07);
-    border-radius: 4px;
-    padding: 1px 6px;
-    font-family: var(--mono);
-    font-size: 12px;
-  }
-
-  /* Error banner */
   .error-banner {
-    background: var(--red-bg);
-    border: 1.5px solid #F0A090;
-    border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    font-size: 14px;
-    color: var(--red);
-    display: none;
+    background: var(--red-bg); border: 1.5px solid #F0A090;
+    border-radius: var(--radius); padding: 16px 20px; margin-bottom: 24px;
+    font-size: 14px; color: var(--red); display: none;
   }
   .error-banner.show { display: block; }
 
-  /* Filters */
-  .filters {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-bottom: 24px;
-    align-items: center;
-  }
+  .filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; align-items: flex-end; }
   .filter-group { display: flex; flex-direction: column; gap: 4px; }
   .filter-label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
   select {
-    font-family: var(--font);
-    font-size: 14px;
-    padding: 8px 32px 8px 12px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
+    font-family: var(--font); font-size: 14px; padding: 8px 32px 8px 12px;
+    border-radius: 8px; border: 1px solid var(--border);
     background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%238A8680' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
-    color: var(--text);
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    min-width: 160px;
+    color: var(--text); cursor: pointer; appearance: none; -webkit-appearance: none; min-width: 180px;
   }
   select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
   .btn-refresh {
-    font-family: var(--font);
-    font-size: 13px;
-    font-weight: 500;
-    padding: 8px 16px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: background 0.15s;
-    margin-top: 18px;
+    font-family: var(--font); font-size: 13px; font-weight: 500;
+    padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--card); color: var(--text); cursor: pointer;
+    display: flex; align-items: center; gap: 6px; transition: background 0.15s;
   }
   .btn-refresh:hover { background: var(--bg); }
-  .btn-refresh svg { width: 14px; height: 14px; }
 
-  /* KPIs */
-  .kpis {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-  .kpi {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-  }
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 24px; }
+  .kpi { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); }
   .kpi-label { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
-  .kpi-val { font-size: 24px; font-weight: 600; font-family: var(--mono); }
+  .kpi-val { font-size: 22px; font-weight: 600; font-family: var(--mono); }
   .kpi-val.green { color: var(--green); }
   .kpi-val.red { color: var(--red); }
   .kpi-val.accent { color: var(--accent); }
-  .kpi-badge {
-    display: inline-block;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 20px;
-    margin-top: 6px;
-    font-weight: 500;
-  }
+  .kpi-badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; margin-top: 6px; font-weight: 500; }
   .badge-green { background: var(--green-bg); color: #0E6B4E; }
   .badge-red { background: var(--red-bg); color: var(--red); }
+  .badge-muted { background: var(--bg); color: var(--muted); }
 
-  /* Charts grid */
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } .main { padding: 16px; } }
 
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    box-shadow: var(--shadow);
-  }
-  .card-title {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    margin-bottom: 16px;
-  }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
+  .card-title { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
 
-  /* Bar chart manual */
   .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
-  .bar-label { font-size: 12px; color: var(--text); width: 100px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-label { font-size: 12px; color: var(--text); width: 110px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .bar-track { flex: 1; height: 7px; background: var(--bg); border-radius: 4px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
-  .bar-val { font-size: 11px; color: var(--muted); font-family: var(--mono); width: 80px; text-align: right; flex-shrink: 0; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-val { font-size: 11px; color: var(--muted); font-family: var(--mono); width: 90px; text-align: right; flex-shrink: 0; }
 
-  /* Tabela */
   .table-wrap { overflow-x: auto; }
   table { width: 100%; font-size: 13px; border-collapse: collapse; }
-  th {
-    text-align: left;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 8px 10px;
-    border-bottom: 1px solid var(--border);
-  }
+  th { text-align: left; font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 10px; border-bottom: 1px solid var(--border); }
   td { padding: 10px; border-bottom: 1px solid var(--bg); }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--bg); }
-  .val-in { color: var(--green); font-family: var(--mono); font-weight: 500; text-align: right; }
-  .val-out { color: var(--red); font-family: var(--mono); font-weight: 500; text-align: right; }
+  .val-in  { color: var(--green); font-family: var(--mono); font-weight: 500; text-align: right; }
+  .val-out { color: var(--red);   font-family: var(--mono); font-weight: 500; text-align: right; }
   .val-pos { color: var(--green); font-family: var(--mono); font-weight: 600; text-align: right; }
-  .val-neg { color: var(--red); font-family: var(--mono); font-weight: 600; text-align: right; }
-  .val-zero { color: var(--muted); font-family: var(--mono); text-align: right; }
+  .val-neg { color: var(--red);   font-family: var(--mono); font-weight: 600; text-align: right; }
+  .val-zero{ color: var(--muted); font-family: var(--mono); text-align: right; }
   td:not(:first-child) { text-align: right; }
 
-  /* Loading */
-  .loading {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 64px 0;
-    gap: 16px;
-    color: var(--muted);
-    font-size: 14px;
-  }
-  .spinner {
-    width: 28px; height: 28px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
+  .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 0; gap: 16px; color: var(--muted); font-size: 14px; }
+  .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .last-update {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: var(--mono);
-    margin-top: 24px;
-    text-align: right;
-  }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .leg-sq { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .last-update { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 8px; text-align: right; }
 </style>
 </head>
 <body>
 
 <div class="header">
   <div>
-    <div class="header-title">Dashboard Financeiro</div>
+    <div class="header-title">Dashboard Financeiro — Salvos pelo Amor</div>
     <div class="header-sub">Centros de custo por projeto · 2026</div>
   </div>
   <div>
     <span class="status-dot"></span>
-    <span class="status-label">Dados do Google Sheets</span>
+    <span class="status-label">Atualizado automaticamente</span>
   </div>
 </div>
 
 <div class="main">
-  <!-- Banner de erro -->
+
   <div class="error-banner" id="error-banner"></div>
 
   <div class="filters">
@@ -275,7 +139,7 @@
       <select id="sel-proj"><option value="todos">Todos os projetos</option></select>
     </div>
     <button class="btn-refresh" onclick="carregarDados()">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5a5.5 5.5 0 0 1 4.5 2.33"/>
         <polyline points="10.5 2 13.5 2.83 12.67 5.83"/>
       </svg>
@@ -284,132 +148,95 @@
   </div>
 
   <div id="conteudo">
-    <div class="loading"><div class="spinner"></div>Carregando dados da planilha...</div>
+    <div class="loading"><div class="spinner"></div>Carregando dados...</div>
   </div>
 
 </div>
 
 <script>
-// ============================================================
-// ⚙️  Cole aqui a URL do Google Sheets (formato CSV)
-// ============================================================
-const SHEET_URL = 'COLE_AQUI_A_URL_DO_GOOGLE_SHEETS';
-// ============================================================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZgkqjxEh2UZJCh8FuNKXglsq860aLxsK07qJeOdzhB6YEjEXkOdES3OWOSs-EqS2Q/exec';
 
 let DADOS = [];
 let mesChart = null;
-
-function parseValorBR(v) {
-  if (!v || v.trim() === '') return 0;
-  return parseFloat(v.replace(/\./g, '').replace(',', '.').replace('-', '')) || 0;
-}
+const MESES_PT = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
 function fmtBR(v) {
   return 'R$ ' + Math.abs(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function parsarCSV(texto) {
-  const linhas = texto.trim().split('\n');
-  if (linhas.length < 2) return [];
-  const cabecalho = linhas[0].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
-
-  const idx = {
-    data: cabecalho.findIndex(c => c === 'Data'),
-    tipo: cabecalho.findIndex(c => c.includes('Entrada') || c.includes('Saída') || c === 'Entrada/Saída' || c === 'Entrada'),
-    projeto: cabecalho.findIndex(c => c.includes('Projeto')),
-    credito: cabecalho.findIndex(c => c.includes('Crédito') || c.includes('Credito')),
-    debito: cabecalho.findIndex(c => c.includes('Débito') || c.includes('Debito')),
-  };
-
-  const registros = [];
-  for (let i = 1; i < linhas.length; i++) {
-    const cols = linhas[i].split(',').map(c => c.trim().replace(/^"|"$/g, ''));
-    const dataStr = cols[idx.data] || '';
-    const tipo = cols[idx.tipo] || '';
-    const projeto = (cols[idx.projeto] || '').trim() || '(Entradas Gerais)';
-    const credito = idx.credito >= 0 ? parseValorBR(cols[idx.credito]) : 0;
-    const debito = idx.debito >= 0 ? parseValorBR(cols[idx.debito]) : 0;
-
-    if (!dataStr) continue;
-
-    // Tenta extrair mês da data
-    let mes = '', mesLabel = '';
-    const partes = dataStr.split('/');
-    if (partes.length === 3) {
-      mes = `${partes[2]}-${partes[1].padStart(2,'0')}`;
-      const nomes = ['','Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-      mesLabel = `${nomes[parseInt(partes[1])]}/${partes[2]}`;
-    } else {
-      // Tenta formato ISO ou número serial Excel
-      const d = new Date(dataStr);
-      if (!isNaN(d)) {
-        mes = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-        const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-        mesLabel = `${nomes[d.getMonth()]}/${d.getFullYear()}`;
-      }
-    }
-
-    if (!mes) continue;
-
-    registros.push({ data: dataStr, mes, mesLabel, projeto, tipo, credito, debito });
+function parsarData(dataStr) {
+  if (!dataStr) return null;
+  const p = String(dataStr).split('/');
+  if (p.length === 3) {
+    return {
+      mes: `${p[2]}-${p[1].padStart(2,'0')}`,
+      mesLabel: `${MESES_PT[parseInt(p[1])]}/${p[2]}`
+    };
   }
-  return registros;
+  return null;
 }
 
-async function carregarDados() {
-  if (SHEET_URL === 'COLE_AQUI_A_URL_DO_GOOGLE_SHEETS') {
-    document.getElementById('config-banner').classList.add('show');
-    renderComDados([]);
-    return;
-  }
-
-  document.getElementById('config-banner').classList.remove('show');
+function carregarDados() {
   document.getElementById('error-banner').classList.remove('show');
-  document.getElementById('conteudo').innerHTML = '<div class="loading"><div class="spinner"></div>Carregando dados da planilha...</div>';
+  document.getElementById('conteudo').innerHTML = '<div class="loading"><div class="spinner"></div>Carregando dados...</div>';
 
-  try {
-    const resp = await fetch(SHEET_URL);
-    if (!resp.ok) throw new Error(`Erro HTTP ${resp.status}`);
-    const texto = await resp.text();
-    DADOS = parsarCSV(texto);
-    if (DADOS.length === 0) throw new Error('Nenhum dado encontrado. Verifique se a URL está correta e a planilha está publicada.');
-    popularFiltros();
-    renderComDados(filtrar());
-  } catch (e) {
-    const banner = document.getElementById('error-banner');
-    banner.innerHTML = `<strong>Erro ao carregar planilha:</strong> ${e.message}<br><br>Verifique se a URL está correta e se a planilha está publicada como CSV no Google Sheets.`;
-    banner.classList.add('show');
+  // Remove script anterior se existir
+  const old = document.getElementById('jsonp-script');
+  if (old) old.remove();
+
+  // Define callback global
+  window.receberDados = function(json) {
+    try {
+      if (json.erro) throw new Error(json.erro);
+      if (!Array.isArray(json) || json.length === 0) throw new Error('Nenhum dado retornado. Verifique o Apps Script.');
+      DADOS = json.map(d => {
+        const dt = parsarData(d.data);
+        return { ...d, mes: dt ? dt.mes : '', mesLabel: dt ? dt.mesLabel : '' };
+      }).filter(d => d.mes);
+      popularFiltros();
+      renderComDados(filtrar());
+    } catch(e) {
+      const b = document.getElementById('error-banner');
+      b.innerHTML = `<strong>Erro ao carregar dados:</strong> ${e.message}`;
+      b.classList.add('show');
+      document.getElementById('conteudo').innerHTML = '';
+    }
+  };
+
+  // Injeta script JSONP (resolve CORS)
+  const script = document.createElement('script');
+  script.id = 'jsonp-script';
+  script.src = SCRIPT_URL + '?callback=receberDados';
+  script.onerror = () => {
+    const b = document.getElementById('error-banner');
+    b.innerHTML = '<strong>Erro ao carregar dados:</strong> Não foi possível conectar ao Google Apps Script. Verifique se o script está implantado corretamente.';
+    b.classList.add('show');
     document.getElementById('conteudo').innerHTML = '';
-  }
+  };
+  document.body.appendChild(script);
 }
 
 function popularFiltros() {
-  const meses = [...new Set(DADOS.map(d => d.mes))].filter(Boolean).sort();
+  const meses    = [...new Set(DADOS.map(d => d.mes))].filter(Boolean).sort();
   const projetos = [...new Set(DADOS.map(d => d.projeto))].sort();
-
-  const selMes = document.getElementById('sel-mes');
+  const selMes  = document.getElementById('sel-mes');
   const selProj = document.getElementById('sel-proj');
-
   selMes.innerHTML = '<option value="todos">Todos os meses</option>';
   meses.forEach(m => {
-    const d = DADOS.find(x => x.mes === m);
-    selMes.innerHTML += `<option value="${m}">${d ? d.mesLabel : m}</option>`;
+    const lbl = DADOS.find(d => d.mes === m)?.mesLabel || m;
+    selMes.innerHTML += `<option value="${m}">${lbl}</option>`;
   });
-
   selProj.innerHTML = '<option value="todos">Todos os projetos</option>';
-  projetos.forEach(p => {
-    selProj.innerHTML += `<option value="${p}">${p}</option>`;
-  });
+  projetos.forEach(p => { selProj.innerHTML += `<option value="${p}">${p}</option>`; });
 }
 
 function filtrar() {
-  const mes = document.getElementById('sel-mes').value;
+  const mes  = document.getElementById('sel-mes').value;
   const proj = document.getElementById('sel-proj').value;
-  return DADOS.filter(d => {
-    if (mes !== 'todos' && d.mes !== mes) return false;
-    if (proj !== 'todos' && d.projeto !== proj) return false;
-    return true;
-  });
+  return DADOS.filter(d =>
+    (mes  === 'todos' || d.mes     === mes) &&
+    (proj === 'todos' || d.projeto === proj)
+  );
 }
 
 function agruparProjeto(dados) {
@@ -425,7 +252,6 @@ function agruparProjeto(dados) {
 function agruparMes(dados) {
   const map = {};
   dados.forEach(d => {
-    if (!d.mes) return;
     if (!map[d.mes]) map[d.mes] = { label: d.mesLabel, E: 0, S: 0 };
     map[d.mes].E += d.credito;
     map[d.mes].S += d.debito;
@@ -434,83 +260,68 @@ function agruparMes(dados) {
 }
 
 function renderBars(entries, key, color) {
-  const filtrado = entries.filter(x => x[1][key] > 0).sort((a, b) => b[1][key] - a[1][key]);
-  const max = Math.max(...filtrado.map(x => x[1][key]), 1);
+  const filtrado = entries.filter(([,v]) => v[key] > 0).sort((a,b) => b[1][key] - a[1][key]);
+  const max = Math.max(...filtrado.map(([,v]) => v[key]), 1);
   if (!filtrado.length) return '<p style="font-size:13px;color:var(--muted);padding:8px 0">Nenhum dado no período</p>';
   return filtrado.map(([p, v]) => `
     <div class="bar-row">
       <span class="bar-label" title="${p}">${p}</span>
       <div class="bar-track"><div class="bar-fill" style="width:${(v[key]/max*100).toFixed(1)}%;background:${color}"></div></div>
       <span class="bar-val">${fmtBR(v[key])}</span>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function renderComDados(dados) {
-  const byProj = agruparProjeto(dados);
+  const byProj  = agruparProjeto(dados);
   const entries = Object.entries(byProj);
-  const totalE = dados.reduce((s, d) => s + d.credito, 0);
-  const totalS = dados.reduce((s, d) => s + d.debito, 0);
-  const saldo = totalE - totalS;
+  const totalE  = dados.reduce((s,d) => s + d.credito, 0);
+  const totalS  = dados.reduce((s,d) => s + d.debito,  0);
+  const saldo   = totalE - totalS;
 
-  const tabelaRows = entries.sort((a, b) => (b[1].E + b[1].S) - (a[1].E + a[1].S)).map(([p, v]) => {
-    const s = v.E - v.S;
-    const saldoClass = s > 0 ? 'val-pos' : s < 0 ? 'val-neg' : 'val-zero';
-    return `<tr>
-      <td>${p}</td>
-      <td class="val-in">${v.E > 0 ? fmtBR(v.E) : '—'}</td>
-      <td class="val-out">${v.S > 0 ? fmtBR(v.S) : '—'}</td>
-      <td class="${saldoClass}">${s < 0 ? '-' : ''}${fmtBR(s)}</td>
-    </tr>`;
-  }).join('');
+  const tabelaRows = entries
+    .sort((a,b) => (b[1].E + b[1].S) - (a[1].E + a[1].S))
+    .map(([p, v]) => {
+      const s = v.E - v.S;
+      return `<tr>
+        <td>${p}</td>
+        <td class="val-in">${v.E > 0 ? fmtBR(v.E) : '—'}</td>
+        <td class="val-out">${v.S > 0 ? fmtBR(v.S) : '—'}</td>
+        <td class="${s > 0 ? 'val-pos' : s < 0 ? 'val-neg' : 'val-zero'}">${s < 0 ? '-' : ''}${fmtBR(s)}</td>
+      </tr>`;
+    }).join('');
 
   document.getElementById('conteudo').innerHTML = `
     <div class="kpis">
-      <div class="kpi">
-        <div class="kpi-label">Entradas</div>
-        <div class="kpi-val green">${fmtBR(totalE)}</div>
-        <div class="kpi-badge badge-green">Créditos do período</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Saídas</div>
-        <div class="kpi-val red">${fmtBR(totalS)}</div>
-        <div class="kpi-badge badge-red">Débitos do período</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Saldo</div>
-        <div class="kpi-val ${saldo >= 0 ? 'green' : 'red'}">${saldo < 0 ? '-' : ''}${fmtBR(saldo)}</div>
-        <div class="kpi-badge ${saldo >= 0 ? 'badge-green' : 'badge-red'}">${saldo >= 0 ? 'Positivo' : 'Negativo'}</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-label">Lançamentos</div>
-        <div class="kpi-val accent">${dados.length}</div>
-        <div class="kpi-badge" style="background:var(--bg);color:var(--muted)">registros</div>
-      </div>
+      <div class="kpi"><div class="kpi-label">Entradas</div><div class="kpi-val green">${fmtBR(totalE)}</div><div class="kpi-badge badge-green">Créditos do período</div></div>
+      <div class="kpi"><div class="kpi-label">Saídas</div><div class="kpi-val red">${fmtBR(totalS)}</div><div class="kpi-badge badge-red">Débitos do período</div></div>
+      <div class="kpi"><div class="kpi-label">Saldo</div><div class="kpi-val ${saldo >= 0 ? 'green' : 'red'}">${saldo < 0 ? '-' : ''}${fmtBR(saldo)}</div><div class="kpi-badge ${saldo >= 0 ? 'badge-green' : 'badge-red'}">${saldo >= 0 ? 'Positivo' : 'Negativo'}</div></div>
+      <div class="kpi"><div class="kpi-label">Lançamentos</div><div class="kpi-val accent">${dados.length}</div><div class="kpi-badge badge-muted">registros</div></div>
     </div>
 
     <div class="grid2">
-      <div class="card">
+      <div class="card" style="margin-bottom:0">
         <div class="card-title">Saídas por projeto</div>
-        <div id="bars-saidas">${renderBars(entries, 'S', '#C94A2A')}</div>
+        ${renderBars(entries, 'S', '#C94A2A')}
       </div>
-      <div class="card">
+      <div class="card" style="margin-bottom:0">
         <div class="card-title">Entradas por projeto</div>
-        <div id="bars-entradas">${renderBars(entries, 'E', '#1D9E75')}</div>
+        ${renderBars(entries, 'E', '#1D9E75')}
       </div>
     </div>
+    <div style="margin-bottom:16px"></div>
 
-    <div class="card" style="margin-bottom:16px">
+    <div class="card">
       <div class="card-title">Entradas e saídas por mês</div>
-      <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:12px">
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;display:inline-block"></span>Entradas</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:#C94A2A;display:inline-block"></span>Saídas</span>
+      <div class="legend">
+        <span><span class="leg-sq" style="background:#1D9E75"></span>Entradas</span>
+        <span><span class="leg-sq" style="background:#C94A2A"></span>Saídas</span>
       </div>
       <div style="position:relative;width:100%;height:220px">
-        <canvas id="chart-mes" role="img" aria-label="Gráfico de barras comparando entradas e saídas mensais">Comparativo mensal de entradas e saídas da ONG.</canvas>
+        <canvas id="chart-mes" role="img" aria-label="Gráfico comparativo mensal">Comparativo mensal de entradas e saídas.</canvas>
       </div>
     </div>
 
-    <div class="card" style="margin-bottom:16px">
+    <div class="card">
       <div class="card-title">Resumo por projeto</div>
       <div class="table-wrap">
         <table>
@@ -519,11 +330,9 @@ function renderComDados(dados) {
         </table>
       </div>
     </div>
-
     <div class="last-update">Última atualização: ${new Date().toLocaleString('pt-BR')}</div>
   `;
 
-  // Gráfico mensal
   const byMes = agruparMes(dados);
   const ctx = document.getElementById('chart-mes');
   if (ctx) {
@@ -533,13 +342,12 @@ function renderComDados(dados) {
       data: {
         labels: byMes.map(m => m.label),
         datasets: [
-          { label: 'Entradas', data: byMes.map(m => parseFloat(m.E.toFixed(2))), backgroundColor: '#1D9E75', borderRadius: 4 },
-          { label: 'Saídas', data: byMes.map(m => parseFloat(m.S.toFixed(2))), backgroundColor: '#C94A2A', borderRadius: 4 }
+          { label: 'Entradas', data: byMes.map(m => +m.E.toFixed(2)), backgroundColor: '#1D9E75', borderRadius: 4 },
+          { label: 'Saídas',   data: byMes.map(m => +m.S.toFixed(2)), backgroundColor: '#C94A2A', borderRadius: 4 }
         ]
       },
       options: {
-        responsive: true,
-        maintainAspectRatio: false,
+        responsive: true, maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
           x: { ticks: { autoSkip: false, font: { family: 'DM Sans', size: 12 } }, grid: { display: false } },
@@ -550,7 +358,7 @@ function renderComDados(dados) {
   }
 }
 
-document.getElementById('sel-mes').addEventListener('change', () => renderComDados(filtrar()));
+document.getElementById('sel-mes').addEventListener('change',  () => renderComDados(filtrar()));
 document.getElementById('sel-proj').addEventListener('change', () => renderComDados(filtrar()));
 
 carregarDados();

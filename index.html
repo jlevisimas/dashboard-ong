@@ -39,7 +39,7 @@
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .status-label { font-size: 12px; opacity: 0.6; }
 
-  .main { padding: 24px 32px; max-width: 1100px; margin: 0 auto; }
+  .main { padding: 24px 32px; max-width: 1200px; margin: 0 auto; }
 
   .error-banner {
     background: var(--red-bg); border: 1.5px solid #F0A090;
@@ -55,7 +55,7 @@
     font-family: var(--font); font-size: 14px; padding: 8px 32px 8px 12px;
     border-radius: 8px; border: 1px solid var(--border);
     background: var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%238A8680' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 10px center;
-    color: var(--text); cursor: pointer; appearance: none; -webkit-appearance: none; min-width: 180px;
+    color: var(--text); cursor: pointer; appearance: none; -webkit-appearance: none; min-width: 160px;
   }
   select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
@@ -80,7 +80,7 @@
   .badge-muted { background: var(--bg); color: var(--muted); }
 
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } .main { padding: 16px; } }
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } .main { padding: 16px; } .filters { gap: 8px; } }
 
   .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 16px; }
   .card-title { font-size: 11px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px; }
@@ -103,6 +103,8 @@
   .val-neg { color: var(--red);   font-family: var(--mono); font-weight: 600; text-align: right; }
   .val-zero{ color: var(--muted); font-family: var(--mono); text-align: right; }
   td:not(:first-child) { text-align: right; }
+
+  .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; background: var(--bg); color: var(--muted); font-weight: 500; }
 
   .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px 0; gap: 16px; color: var(--muted); font-size: 14px; }
   .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -143,6 +145,14 @@
       <span class="filter-label">Projeto</span>
       <select id="sel-proj"><option value="todos">Todos os projetos</option></select>
     </div>
+    <div class="filter-group">
+      <span class="filter-label">Atividade</span>
+      <select id="sel-ativ"><option value="todos">Todas as atividades</option></select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Plano de contas</span>
+      <select id="sel-plano"><option value="todos">Todos</option></select>
+    </div>
     <button class="btn-refresh" onclick="carregarDados()">
       <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5a5.5 5.5 0 0 1 4.5 2.33"/>
@@ -159,7 +169,7 @@
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzZgkqjxEh2UZJCh8FuNKXglsq860aLxsK07qJeOdzhB6YEjEXkOdES3OWOSs-EqS2Q/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywVz4xQ9KTutUxReFYBvyX94fv6LWyCFcSdWQO_-7294134d7sXOqUuTzaekgEodU-/exec';
 
 let DADOS = [];
 let mesChart = null;
@@ -185,11 +195,9 @@ function carregarDados() {
   document.getElementById('error-banner').classList.remove('show');
   document.getElementById('conteudo').innerHTML = '<div class="loading"><div class="spinner"></div>Carregando dados...</div>';
 
-  // Remove script anterior se existir
   const old = document.getElementById('jsonp-script');
   if (old) old.remove();
 
-  // Define callback global
   window.receberDados = function(json) {
     try {
       if (json.erro) throw new Error(json.erro);
@@ -208,13 +216,12 @@ function carregarDados() {
     }
   };
 
-  // Injeta script JSONP (resolve CORS)
   const script = document.createElement('script');
   script.id = 'jsonp-script';
   script.src = SCRIPT_URL + '?callback=receberDados';
   script.onerror = () => {
     const b = document.getElementById('error-banner');
-    b.innerHTML = '<strong>Erro ao carregar dados:</strong> Não foi possível conectar ao Google Apps Script. Verifique se o script está implantado corretamente.';
+    b.innerHTML = '<strong>Erro ao carregar dados:</strong> Não foi possível conectar ao Google Apps Script.';
     b.classList.add('show');
     document.getElementById('conteudo').innerHTML = '';
   };
@@ -223,24 +230,41 @@ function carregarDados() {
 
 function popularFiltros() {
   const meses    = [...new Set(DADOS.map(d => d.mes))].filter(Boolean).sort();
-  const projetos = [...new Set(DADOS.map(d => d.projeto))].sort();
-  const selMes  = document.getElementById('sel-mes');
-  const selProj = document.getElementById('sel-proj');
+  const projetos = [...new Set(DADOS.map(d => d.projeto))].filter(Boolean).sort();
+  const ativs    = [...new Set(DADOS.map(d => d.ativ))].filter(Boolean).sort();
+  const planos   = [...new Set(DADOS.map(d => d.plano))].filter(Boolean).sort();
+
+  const selMes   = document.getElementById('sel-mes');
+  const selProj  = document.getElementById('sel-proj');
+  const selAtiv  = document.getElementById('sel-ativ');
+  const selPlano = document.getElementById('sel-plano');
+
   selMes.innerHTML = '<option value="todos">Todos os meses</option>';
   meses.forEach(m => {
     const lbl = DADOS.find(d => d.mes === m)?.mesLabel || m;
     selMes.innerHTML += `<option value="${m}">${lbl}</option>`;
   });
+
   selProj.innerHTML = '<option value="todos">Todos os projetos</option>';
   projetos.forEach(p => { selProj.innerHTML += `<option value="${p}">${p}</option>`; });
+
+  selAtiv.innerHTML = '<option value="todos">Todas as atividades</option>';
+  ativs.forEach(a => { selAtiv.innerHTML += `<option value="${a}">${a}</option>`; });
+
+  selPlano.innerHTML = '<option value="todos">Todos</option>';
+  planos.forEach(p => { selPlano.innerHTML += `<option value="${p}">${p}</option>`; });
 }
 
 function filtrar() {
-  const mes  = document.getElementById('sel-mes').value;
-  const proj = document.getElementById('sel-proj').value;
+  const mes   = document.getElementById('sel-mes').value;
+  const proj  = document.getElementById('sel-proj').value;
+  const ativ  = document.getElementById('sel-ativ').value;
+  const plano = document.getElementById('sel-plano').value;
   return DADOS.filter(d =>
-    (mes  === 'todos' || d.mes     === mes) &&
-    (proj === 'todos' || d.projeto === proj)
+    (mes   === 'todos' || d.mes     === mes)   &&
+    (proj  === 'todos' || d.projeto === proj)  &&
+    (ativ  === 'todos' || d.ativ    === ativ)  &&
+    (plano === 'todos' || d.plano   === plano)
   );
 }
 
@@ -264,6 +288,17 @@ function agruparMes(dados) {
   return Object.values(map).sort((a, b) => a.label < b.label ? -1 : 1);
 }
 
+function agruparAtiv(dados) {
+  const map = {};
+  dados.forEach(d => {
+    const k = d.ativ || '(sem atividade)';
+    if (!map[k]) map[k] = { E: 0, S: 0 };
+    map[k].E += d.credito;
+    map[k].S += d.debito;
+  });
+  return map;
+}
+
 function renderBars(entries, key, color) {
   const filtrado = entries.filter(([,v]) => v[key] > 0).sort((a,b) => b[1][key] - a[1][key]);
   const max = Math.max(...filtrado.map(([,v]) => v[key]), 1);
@@ -277,11 +312,13 @@ function renderBars(entries, key, color) {
 }
 
 function renderComDados(dados) {
-  const byProj  = agruparProjeto(dados);
-  const entries = Object.entries(byProj);
-  const totalE  = dados.reduce((s,d) => s + d.credito, 0);
-  const totalS  = dados.reduce((s,d) => s + d.debito,  0);
-  const saldo   = totalE - totalS;
+  const byProj   = agruparProjeto(dados);
+  const byAtiv   = agruparAtiv(dados);
+  const entries  = Object.entries(byProj);
+  const entriesA = Object.entries(byAtiv);
+  const totalE   = dados.reduce((s,d) => s + d.credito, 0);
+  const totalS   = dados.reduce((s,d) => s + d.debito,  0);
+  const saldo    = totalE - totalS;
 
   const tabelaRows = entries
     .sort((a,b) => (b[1].E + b[1].S) - (a[1].E + a[1].S))
@@ -294,6 +331,15 @@ function renderComDados(dados) {
         <td class="${s > 0 ? 'val-pos' : s < 0 ? 'val-neg' : 'val-zero'}">${s < 0 ? '-' : ''}${fmtBR(s)}</td>
       </tr>`;
     }).join('');
+
+  const ativRows = entriesA
+    .filter(([,v]) => v.S > 0)
+    .sort((a,b) => b[1].S - a[1].S)
+    .slice(0, 10)
+    .map(([a, v]) => `<tr>
+      <td>${a || '—'}</td>
+      <td class="val-out">${fmtBR(v.S)}</td>
+    </tr>`).join('');
 
   document.getElementById('conteudo').innerHTML = `
     <div class="kpis">
@@ -326,16 +372,28 @@ function renderComDados(dados) {
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">Resumo por projeto</div>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Projeto</th><th style="text-align:right">Entradas</th><th style="text-align:right">Saídas</th><th style="text-align:right">Saldo</th></tr></thead>
-          <tbody>${tabelaRows || '<tr><td colspan="4" style="color:var(--muted);padding:20px;text-align:center">Nenhum dado no período</td></tr>'}</tbody>
-        </table>
+    <div class="grid2">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">Resumo por projeto</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Projeto</th><th style="text-align:right">Entradas</th><th style="text-align:right">Saídas</th><th style="text-align:right">Saldo</th></tr></thead>
+            <tbody>${tabelaRows || '<tr><td colspan="4" style="color:var(--muted);padding:20px;text-align:center">Nenhum dado</td></tr>'}</tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-title">Top saídas por atividade</div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Atividade</th><th style="text-align:right">Saídas</th></tr></thead>
+            <tbody>${ativRows || '<tr><td colspan="2" style="color:var(--muted);padding:20px;text-align:center">Nenhum dado</td></tr>'}</tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="last-update">Última atualização: ${new Date().toLocaleString('pt-BR')}</div>
+
+    <div class="last-update" style="margin-top:16px">Última atualização: ${new Date().toLocaleString('pt-BR')}</div>
   `;
 
   const byMes = agruparMes(dados);
@@ -363,8 +421,10 @@ function renderComDados(dados) {
   }
 }
 
-document.getElementById('sel-mes').addEventListener('change',  () => renderComDados(filtrar()));
-document.getElementById('sel-proj').addEventListener('change', () => renderComDados(filtrar()));
+document.getElementById('sel-mes').addEventListener('change',   () => renderComDados(filtrar()));
+document.getElementById('sel-proj').addEventListener('change',  () => renderComDados(filtrar()));
+document.getElementById('sel-ativ').addEventListener('change',  () => renderComDados(filtrar()));
+document.getElementById('sel-plano').addEventListener('change', () => renderComDados(filtrar()));
 
 carregarDados();
 </script>
